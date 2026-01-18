@@ -425,3 +425,374 @@ When you’re ready, say ONE of these:
 “Review my CI/CD workflow”
 
 “Show me the senior solution”
+
+Perfect — that’s actually excellent.
+Using an Amazon Linux EC2 instance as your “local” machine is very realistic and senior-appropriate. Many production teams do exactly this.
+
+Let me lock this into the project properly and show you what changes, what doesn’t, and what you must be careful about.
+
+🧠 Why Amazon Linux EC2 Is a GOOD Choice (Senior Signal)
+
+Using Amazon Linux means you are:
+
+Working close to production OS
+
+Dealing with systemd, yum/dnf, SELinux-like constraints
+
+Running Docker the way it runs on real servers
+
+Avoiding “it worked on my Mac” problems
+
+Interviewers like this.
+
+🔧 What This Affects (and What It Doesn’t)
+❌ Does NOT change:
+
+Python app code
+
+Dockerfile logic
+
+Multi-stage build approach
+
+GitHub Actions CI/CD
+
+Docker registry workflow
+
+Docker images must be OS-agnostic.
+If they aren’t, that’s a bug.
+
+✅ DOES affect:
+
+Docker installation
+
+User permissions
+
+Firewall / security groups
+
+How you test networking
+
+How you debug failures
+
+🛠️ Step 0 – Prepare the Amazon Linux EC2 Instance
+
+I’ll assume Amazon Linux 2023 (most common now).
+
+Update system
+sudo dnf update -y
+
+Install Docker
+sudo dnf install docker -y
+
+
+Enable and start:
+
+sudo systemctl enable docker
+sudo systemctl start docker
+
+
+Verify:
+
+docker version
+
+(Critical) Add your user to Docker group
+sudo usermod -aG docker ec2-user
+newgrp docker
+
+
+Test:
+
+docker ps
+
+
+If this fails → stop and fix it. Seniors don’t run Docker as root.
+
+🔐 Networking & Security Group (Easy to Miss)
+
+Your EC2 Security Group must allow:
+
+Port	Purpose
+22	SSH
+5000	Flask app test
+
+If you forget this:
+
+curl localhost works
+
+Browser access fails
+
+That’s not Docker’s fault — it’s AWS networking.
+
+🧪 How You’ll Test Locally on EC2
+
+When you run:
+
+docker run -p 5000:5000 python-api:local
+
+
+You can test:
+
+curl http://localhost:5000
+
+
+From your laptop:
+
+http://<EC2_PUBLIC_IP>:5000
+
+
+This mirrors real service exposure.
+
+📦 GitHub Actions vs EC2 (Important Distinction)
+Environment	Purpose
+EC2	Development, validation
+GitHub Actions	CI/CD
+Docker Registry	Artifact store
+
+Your EC2:
+
+❌ Should NOT push images manually
+
+❌ Should NOT hold secrets
+
+✅ Used for confidence before CI runs
+
+This separation is senior-level hygiene.
+
+🧠 Common Amazon Linux Gotchas (Senior Awareness)
+1️⃣ SELinux-like behavior
+
+If something weird happens:
+
+sudo setenforce 0
+
+
+(For debugging only)
+
+2️⃣ Disk space
+
+Docker fills disks fast on EC2.
+
+Check:
+
+df -h
+docker system df
+
+
+Clean:
+
+docker system prune -a
+
+3️⃣ Time drift
+
+If GitHub Actions auth fails due to time skew:
+
+timedatectl
+
+🧭 How This Fits Into Your Portfolio
+
+You can now honestly say:
+
+“I developed and validated production containers on Amazon Linux EC2 to mirror real server environments.”
+
+That’s a senior DevOps detail, not fluff.
+
+🟢 Your Immediate Next Task (Adjusted for EC2)
+
+Create project directory on EC2
+
+Add the Python app I gave you
+
+Confirm it runs without Docker
+
+Start drafting the multi-stage Dockerfile
+
+When ready, say:
+
+“Review my Dockerfile”
+
+“Show me the senior solution”
+Perfect — that’s actually excellent.
+Using an Amazon Linux EC2 instance as your “local” machine is very realistic and senior-appropriate. Many production teams do exactly this.
+
+Let me lock this into the project properly and show you what changes, what doesn’t, and what you must be careful about.
+
+🧠 Why Amazon Linux EC2 Is a GOOD Choice (Senior Signal)
+
+Using Amazon Linux means you are:
+
+Working close to production OS
+
+Dealing with systemd, yum/dnf, SELinux-like constraints
+
+Running Docker the way it runs on real servers
+
+Avoiding “it worked on my Mac” problems
+
+Interviewers like this.
+
+🔧 What This Affects (and What It Doesn’t)
+❌ Does NOT change:
+
+Python app code
+
+Dockerfile logic
+
+Multi-stage build approach
+
+GitHub Actions CI/CD
+
+Docker registry workflow
+
+Docker images must be OS-agnostic.
+If they aren’t, that’s a bug.
+
+✅ DOES affect:
+
+Docker installation
+
+User permissions
+
+Firewall / security groups
+
+How you test networking
+
+How you debug failures
+
+🛠️ Step 0 – Prepare the Amazon Linux EC2 Instance
+
+I’ll assume Amazon Linux 2023 (most common now).
+
+Update system
+sudo dnf update -y
+
+Install Docker
+sudo dnf install docker -y
+
+
+Enable and start:
+
+sudo systemctl enable docker
+sudo systemctl start docker
+
+
+Verify:
+
+docker version
+
+(Critical) Add your user to Docker group
+sudo usermod -aG docker ec2-user
+newgrp docker
+
+
+Test:
+
+docker ps
+
+
+If this fails → stop and fix it. Seniors don’t run Docker as root.
+
+🔐 Networking & Security Group (Easy to Miss)
+
+Your EC2 Security Group must allow:
+
+Port	Purpose
+22	SSH
+5000	Flask app test
+
+If you forget this:
+
+curl localhost works
+
+Browser access fails
+
+That’s not Docker’s fault — it’s AWS networking.
+
+🧪 How You’ll Test Locally on EC2
+
+When you run:
+
+docker run -p 5000:5000 python-api:local
+
+
+You can test:
+
+curl http://localhost:5000
+
+
+From your laptop:
+
+http://<EC2_PUBLIC_IP>:5000
+
+
+This mirrors real service exposure.
+
+📦 GitHub Actions vs EC2 (Important Distinction)
+Environment	Purpose
+EC2	Development, validation
+GitHub Actions	CI/CD
+Docker Registry	Artifact store
+
+Your EC2:
+
+❌ Should NOT push images manually
+
+❌ Should NOT hold secrets
+
+✅ Used for confidence before CI runs
+
+This separation is senior-level hygiene.
+
+🧠 Common Amazon Linux Gotchas (Senior Awareness)
+1️⃣ SELinux-like behavior
+
+If something weird happens:
+
+sudo setenforce 0
+
+
+(For debugging only)
+
+2️⃣ Disk space
+
+Docker fills disks fast on EC2.
+
+Check:
+
+df -h
+docker system df
+
+
+Clean:
+
+docker system prune -a
+
+3️⃣ Time drift
+
+If GitHub Actions auth fails due to time skew:
+
+timedatectl
+
+🧭 How This Fits Into Your Portfolio
+
+You can now honestly say:
+
+“I developed and validated production containers on Amazon Linux EC2 to mirror real server environments.”
+
+That’s a senior DevOps detail, not fluff.
+
+🟢 Your Immediate Next Task (Adjusted for EC2)
+
+Create project directory on EC2
+
+Add the Python app I gave you
+
+Confirm it runs without Docker
+
+Start drafting the multi-stage Dockerfile
+
+When ready, say:
+
+“Review my Dockerfile”
+
+“Show me the senior solution”
+
+We’re building this exactly how senior engineers do it — intentionally and cleanly.We’re building this exactly how senior engineers do it — intentionally and cleanly.
